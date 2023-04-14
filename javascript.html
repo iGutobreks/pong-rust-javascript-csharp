@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>game</title>
+</head>
+<body style="margin: 0;">
+    <div class="container" style="background-color: black; width: 600px; height: 500px;">
+        <h1 class="points" style="margin: 0; color: white; text-align: center;">0 | 0</h1>
+        <div class="player1" style="width: 10px; height: 100px; background-color: white; position: absolute;"></div>
+        <div class="player2" style="width: 10px; height: 100px; background-color: white; position: absolute;"></div>
+        <div class="ball" style="width: 30px; height: 30px; background-color: white; position: absolute;"></div>
+    </div>
+
+    <script>
+        const DRAW_WIDTH = 600, DRAW_HEIGTH = 500;
+        const INIT_POS = {
+            BALL: {x: 300, y: 250}, 
+            PLAYER1: {x: 0, y: 250}, 
+            PLAYER2: {x: 590, y: 250}
+        };
+        const BALL_SPEED = 10;
+        const PLAYER_SIZE = {width: 10, heigth: 100};
+        const PLAYER_SPEED = 10;
+
+        let player1 = document.getElementsByClassName("player1")[0];
+        let player2 = document.getElementsByClassName("player2")[0];
+        let ball = document.getElementsByClassName("ball")[0];
+        let points = document.getElementsByClassName("points")[0];
+
+        player1.style.top = INIT_POS.PLAYER1.y + "px";
+        player2.style.left = INIT_POS.PLAYER2.x + "px";
+        player2.style.top = INIT_POS.PLAYER2.y + "px";
+        ball.style.left = INIT_POS.BALL.x + "px", ball.style.top = INIT_POS.BALL.y + "px";
+
+        let player1_pos = {x: INIT_POS.PLAYER1.x, y: INIT_POS.PLAYER1.y};
+        let player2_pos = {x: INIT_POS.PLAYER2.x, y: INIT_POS.PLAYER2.y};
+        let ball_pos = {x: INIT_POS.BALL.x, y: INIT_POS.BALL.y};
+        let player_colision = "right";
+        let player_points = {player1: 0, player2: 0};
+
+        addEventListener("keydown", event => {
+            switch(event.keyCode) {
+                case 87: if(player1_pos.y > 0) player1_pos.y -= PLAYER_SPEED; break;
+                case 83: if(player1_pos.y < DRAW_HEIGTH - PLAYER_SIZE.heigth) player1_pos.y += PLAYER_SPEED ;
+            }
+
+            player1.style.top = player1_pos.y + "px";
+        })
+
+        function randomizer() {
+            const BALL_SIZE = 30;
+
+            let rand = Math.floor(Math.random() * 30);
+            let val = rand < 15 ? -rand : +rand;
+
+            if(ball_pos.y > DRAW_HEIGTH - BALL_SIZE) {
+                ball_pos.y = ball_pos.y - rand;
+            } else {
+                ball_pos.y = ball_pos.y + val;
+            }
+        }
+
+        function reset_game() {
+            player1_pos.y = INIT_POS.PLAYER1.y;
+            player2_pos.y = INIT_POS.PLAYER2.y;
+            ball_pos.x = INIT_POS.BALL.x;
+            ball_pos.y = INIT_POS.BALL.y;
+
+            player1.style.top = INIT_POS.PLAYER1.y + "px";
+            player2.style.top = INIT_POS.PLAYER2.y + "px";
+            ball.style.left = INIT_POS.BALL.x + "px";
+            ball.style.top = INIT_POS.BALL.y + "px";
+        }
+
+        function update() {
+            function check_ball(player, ball) {
+                let player1_bounds = player[0].getBoundingClientRect();
+                let player2_bounds = player[1].getBoundingClientRect();
+                let ball_bounds = ball.getBoundingClientRect(); 
+
+                if(ball_bounds.left < player1_bounds.left + player1_bounds.width  && ball_bounds.left + ball_bounds.width > player1_bounds.left && ball_bounds.top < player1_bounds.top + player1_bounds.height && ball_bounds.top + ball_bounds.height > player1_bounds.top) {
+                    player_colision = "right";
+                    randomizer();
+                }
+                if(ball_bounds.left < player2_bounds.left + player2_bounds.width && ball_bounds.left + ball_bounds.width > player2_bounds.left && ball_bounds.top < player2_bounds.top + player2_bounds.height && ball_bounds.top + ball_bounds.height > player2_bounds.top) {
+                    player_colision = "left";
+                    randomizer();
+                }
+            }
+
+            const DRAW_COMPATIBLE = ball_pos.x < DRAW_WIDTH || ball_pos.x > DRAW_WIDTH;
+
+            check_ball([player1, player2], ball);
+
+            if(player_colision == "right" && DRAW_COMPATIBLE) {
+                ball_pos.x += BALL_SPEED;
+            }
+
+            if(player_colision == "left" && DRAW_COMPATIBLE) {
+                ball_pos.x -= BALL_SPEED;
+            }
+
+            if(ball_pos.x < player1_pos.x) {
+                player_points.player1 += 1;
+                points.innerHTML = `${player_points.player1} | ${player_points.player2}`;
+                reset_game();
+            }
+            if(ball_pos.x > player2_pos.x) {
+                player_points.player2 += 1;
+                points.innerHTML = `${player_points.player1} | ${player_points.player2}`;
+                reset_game();
+            }
+
+            ball.style.left = ball_pos.x + "px";
+            ball.style.top = ball_pos.y + "px";
+            player2.style.top = ball_pos.y + "px";
+        }
+
+        setInterval(update, 1);
+    </script>
+</body>
+</html>
