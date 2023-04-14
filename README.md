@@ -7,7 +7,7 @@ A Pong-Game written in C#, Javascript and Rust.
 
 ### Similar code
 
-Here you see a C# code:
+Here you see a C# code: (dependencies: getasynckeystate - windows api)
 ```
 void randomizerY() {
     Random rand = new Random();
@@ -23,7 +23,7 @@ void randomizerY() {
 }
 ```
 
-Javascript: 
+Javascript: (: nothing)
 ```
 function randomizer() {
     const BALL_SIZE = 30;
@@ -39,7 +39,7 @@ function randomizer() {
 }
 ```
 
-Rust:
+Rust: (: random_number, ggez and mint)
 ```
 pub fn randomizer_y(&mut self) {
     let rand: i32 = random!(1..=30);
